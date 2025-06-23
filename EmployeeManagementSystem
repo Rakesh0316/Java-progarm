@@ -1,0 +1,197 @@
+import java.util.*;
+
+class Employee {
+    String id;
+    String name;
+    String department;
+    double baseSalary;
+    int leaves;
+
+    Employee(String id, String name, String department, double baseSalary, int leaves) {
+        this.id = id;
+        this.name = name;
+        this.department = department;
+        this.baseSalary = baseSalary;
+        this.leaves = leaves;
+    }
+
+    double calculateSalary() {
+        // Assuming 30 working days, salary deducted per leave
+        double perDay = baseSalary / 30;
+        return baseSalary - (leaves * perDay);
+    }
+
+    public String toString() {
+        return "ID: " + id + ", Name: " + name + ", Dept: " + department +
+               ", Salary: " + calculateSalary() + ", Leaves: " + leaves;
+    }
+}
+
+public class EmployeeManagementSystem {
+    static Scanner sc = new Scanner(System.in);
+    static HashMap<String, Employee> employees = new HashMap<>();
+    static final String adminUser = "rakesh";
+    static final String adminPass = "rakesh@0316";
+
+    static void adminMenu() {
+        while (true) {
+            System.out.println("\n--- Admin Menu ---");
+            System.out.println("1. Add Employee");
+            System.out.println("2. Update Employee");
+            System.out.println("3. Delete Employee");
+            System.out.println("4. Search by ID");
+            System.out.println("5. Search by Department");
+            System.out.println("6. List All Employees");
+            System.out.println("7. Logout");
+            System.out.print("Choice: ");
+            int choice = sc.nextInt();
+            sc.nextLine(); // consume leftover
+
+            switch (choice) {
+                case 1 -> addEmployee();
+                case 2 -> updateEmployee();
+                case 3 -> deleteEmployee();
+                case 4 -> searchById();
+                case 5 -> searchByDepartment();
+                case 6 -> listAllEmployees();
+                case 7 -> { return; }
+                default -> System.out.println("Invalid choice.");
+            }
+        }
+    }
+
+    static void employeeMenu() {
+        System.out.print("Enter your Employee ID: ");
+        String id = sc.nextLine();
+        Employee emp = employees.get(id);
+        if (emp == null) {
+            System.out.println("Employee not found.");
+            return;
+        }
+
+        System.out.println("\nWelcome, " + emp.name);
+        System.out.println("Your Details:");
+        System.out.println(emp);
+    }
+
+    static void addEmployee() {
+        System.out.print("Enter ID: ");
+        String id = sc.nextLine();
+        System.out.print("Enter Name: ");
+        String name = sc.nextLine();
+        System.out.print("Enter Department: ");
+        String dept = sc.nextLine();
+        System.out.print("Enter Base Salary: ");
+        double salary = sc.nextDouble();
+        System.out.print("Enter No. of Leaves: ");
+        int leaves = sc.nextInt();
+        sc.nextLine(); // consume
+
+        employees.put(id, new Employee(id, name, dept, salary, leaves));
+        System.out.println("Employee added successfully.");
+    }
+
+    static void updateEmployee() {
+        System.out.print("Enter ID to update: ");
+        String id = sc.nextLine();
+        Employee emp = employees.get(id);
+        if (emp == null) {
+            System.out.println("Employee not found.");
+            return;
+        }
+
+        System.out.print("Enter New Name: ");
+        emp.name = sc.nextLine();
+        System.out.print("Enter New Department: ");
+        emp.department = sc.nextLine();
+        System.out.print("Enter New Base Salary: ");
+        emp.baseSalary = sc.nextDouble();
+        System.out.print("Enter New Leaves: ");
+        emp.leaves = sc.nextInt();
+        sc.nextLine(); // consume
+
+        System.out.println("Employee updated successfully.");
+    }
+
+    static void deleteEmployee() {
+        System.out.print("Enter ID to delete: ");
+        String id = sc.nextLine();
+        if (employees.remove(id) != null) {
+            System.out.println("Employee deleted.");
+        } else {
+            System.out.println("Employee not found.");
+        }
+    }
+
+    static void searchById() {
+        System.out.print("Enter ID: ");
+        String id = sc.nextLine();
+        Employee emp = employees.get(id);
+        if (emp != null) {
+            System.out.println(emp);
+        } else {
+            System.out.println("Employee not found.");
+        }
+    }
+
+    static void searchByDepartment() {
+        System.out.print("Enter Department: ");
+        String dept = sc.nextLine();
+        boolean found = false;
+        for (Employee emp : employees.values()) {
+            if (emp.department.equalsIgnoreCase(dept)) {
+                System.out.println(emp);
+                found = true;
+            }
+        }
+        if (!found) {
+            System.out.println("No employees found in this department.");
+        }
+    }
+
+    static void listAllEmployees() {
+        if (employees.isEmpty()) {
+            System.out.println("No employees available.");
+            return;
+        }
+        for (Employee emp : employees.values()) {
+            System.out.println(emp);
+        }
+    }
+
+    static void loginMenu() {
+        while (true) {
+            System.out.println("\n=== Employee Management System ===");
+            System.out.println("1. Admin Login");
+            System.out.println("2. Employee Login");
+            System.out.println("3. Exit");
+            System.out.print("Choose an option: ");
+            int choice = sc.nextInt();
+            sc.nextLine(); // consume newline
+
+            switch (choice) {
+                case 1 -> {
+                    System.out.print("Username: ");
+                    String user = sc.nextLine();
+                    System.out.print("Password: ");
+                    String pass = sc.nextLine();
+                    if (user.equals(adminUser) && pass.equals(adminPass)) {
+                        adminMenu();
+                    } else {
+                        System.out.println("Invalid credentials.");
+                    }
+                }
+                case 2 -> employeeMenu();
+                case 3 -> {
+                    System.out.println("Exiting... Goodbye!");
+                    return;
+                }
+                default -> System.out.println("Invalid option.");
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        loginMenu();
+    }
+}
